@@ -1,0 +1,199 @@
+Index: src/main/java/com/hm/serviceImpl/PermissionServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/hm/serviceImpl/PermissionServiceImpl.java b/src/main/java/com/hm/serviceImpl/PermissionServiceImpl.java
+new file mode 100644
+--- /dev/null	(date 1624589225434)
++++ b/src/main/java/com/hm/serviceImpl/PermissionServiceImpl.java	(date 1624589225434)
+@@ -0,0 +1,51 @@
++package com.hm.serviceImpl;
++
++import com.hm.dao.PermissionMapper;
++import com.hm.pojo.Permission;
++import com.hm.service.PermissionService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
++
++import java.text.SimpleDateFormat;
++import java.util.Date;
++import java.util.List;
++
++@Service
++public class PermissionServiceImpl implements PermissionService {
++
++    @Autowired
++    PermissionMapper permissionMapper;
++
++    @Override
++    public List<Permission> findAllPermission() {
++        List allPermission = permissionMapper.findAllPermission();
++        if(null!=allPermission){
++            return allPermission;
++        }
++        return null;
++    }
++
++    @Override
++    public int InsertPermission(String name, String code, String created_time){
++        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
++        created_time=df.format(new Date());
++        return permissionMapper.InsertPermission(name, code, created_time);
++    }
++
++    @Override
++    public int DeletePermissionById(Integer id){
++        return permissionMapper.DeletePermissionById(id);
++    }
++
++    @Override
++    public int UpdatePermission(Permission permission){ return permissionMapper.UpdatePermission(permission); }
++
++    @Override
++    public List<Permission> CurrentPage(int start,int size){
++        List CurrentPage=permissionMapper.CurrentPage(start,size);
++        if(null!=CurrentPage){
++            return CurrentPage;
++        }
++        return null;
++    }
++}
+Index: src/main/java/com/hm/service/PermissionService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/hm/service/PermissionService.java b/src/main/java/com/hm/service/PermissionService.java
+new file mode 100644
+--- /dev/null	(date 1624589225572)
++++ b/src/main/java/com/hm/service/PermissionService.java	(date 1624589225572)
+@@ -0,0 +1,18 @@
++package com.hm.service;
++
++import com.hm.pojo.Permission;
++
++import java.util.List;
++
++public interface PermissionService {
++
++    List<Permission> findAllPermission();
++
++    int InsertPermission(String name, String code, String created_time);
++
++    int DeletePermissionById(Integer id);
++
++    int UpdatePermission(Permission permission);
++
++    List<Permission> CurrentPage(int start,int size);
++}
+Index: src/main/java/com/hm/dao/PermissionMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/hm/dao/PermissionMapper.java b/src/main/java/com/hm/dao/PermissionMapper.java
+new file mode 100644
+--- /dev/null	(date 1624589225440)
++++ b/src/main/java/com/hm/dao/PermissionMapper.java	(date 1624589225440)
+@@ -0,0 +1,25 @@
++package com.hm.dao;
++
++import com.hm.pojo.Permission;
++import org.apache.ibatis.annotations.*;
++
++import java.util.List;
++
++@Mapper
++public interface PermissionMapper {
++
++    @Select("select * from permission")
++    List<Permission> findAllPermission();
++
++    @Insert("insert into permission (name,code,created_time) value (#{permission.name},#{permission.code},#{permission.created_time,jdbcType=TIMESTAMP})")
++    int InsertPermission(@Param("name") String name,@Param("code") String code,@Param("created_time") String created_time);
++
++    @Delete("delete from permission where id=#{id}")
++    int DeletePermissionById(@Param("id") Integer id);
++
++    @Update("update permission set name=#{permission.name},code=#{permission.code} where id=#{id}")
++    int UpdatePermission(@Param("permission") Permission permission);
++
++    @Select("select * from permission limit #{start},#{size}")
++    List<Permission> CurrentPage(@Param("start") int start,@Param("size") int size);
++}
+Index: src/main/java/com/hm/pojo/Permission.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/hm/pojo/Permission.java b/src/main/java/com/hm/pojo/Permission.java
+new file mode 100644
+--- /dev/null	(date 1624589372446)
++++ b/src/main/java/com/hm/pojo/Permission.java	(date 1624589372446)
+@@ -0,0 +1,18 @@
++package com.hm.pojo;
++
++import com.fasterxml.jackson.annotation.JsonFormat;
++import lombok.Data;
++
++import java.util.Date;
++
++@Data
++public class Permission {
++
++    private int id;
++
++    private String name;
++
++    private String code;
++
++    private String created_time;
++}
+Index: src/main/java/com/hm/controller/PermissionController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/hm/controller/PermissionController.java b/src/main/java/com/hm/controller/PermissionController.java
+new file mode 100644
+--- /dev/null	(date 1624589225428)
++++ b/src/main/java/com/hm/controller/PermissionController.java	(date 1624589225428)
+@@ -0,0 +1,37 @@
++package com.hm.controller;
++
++import com.hm.pojo.Permission;
++import com.hm.pojo.Response;
++import com.hm.serviceImpl.PermissionServiceImpl;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@CrossOrigin
++public class PermissionController {
++
++    @Autowired
++    PermissionServiceImpl permissionService;
++
++    @GetMapping("/api/getAllPermissions")
++    public Response<List<Permission>> getAllPermission(){
++        List<Permission> allPermissions = permissionService.findAllPermission();
++        if(allPermissions!=null){
++            return Response.success(allPermissions);
++        }else{
++            return Response.fail("get allPermissions failed");
++        }
++    }
++
++    @PostMapping("/api/InsertPermission")
++    public Response<String> InsertPermission(@RequestBody String name, String code, String created_time){
++        int save= permissionService.InsertPermission(name,code, created_time);
++        if(save>0){
++            return Response.success("insert permission success!");
++        }else{
++            return Response.fail("insert permission fail!");
++        }
++    }
++}

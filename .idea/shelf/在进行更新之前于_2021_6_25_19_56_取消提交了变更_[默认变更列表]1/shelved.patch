@@ -1,0 +1,46 @@
+Index: src/main/java/com/hm/pojo/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.hm.pojo;\r\n\r\nimport lombok.Data;\r\n\r\nimport java.util.Date;\r\n\r\n@Data\r\npublic class User {\r\n    private Integer id;\r\n    private String username;\r\n    private String password;\r\n    private String name;\r\n    private Integer sex;\r\n    private Integer old;\r\n    private Date createdTime;\r\n    private Date lastLoginTime;\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/hm/pojo/User.java b/src/main/java/com/hm/pojo/User.java
+--- a/src/main/java/com/hm/pojo/User.java	
++++ b/src/main/java/com/hm/pojo/User.java	
+@@ -10,6 +10,7 @@
+     private String username;
+     private String password;
+     private String name;
++    private String salt;
+     private Integer sex;
+     private Integer old;
+     private Date createdTime;
+Index: src/main/java/com/hm/serviceImpl/UserServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.hm.serviceImpl;\r\n\r\nimport com.hm.service.UserService;\r\n\r\npublic class UserServiceImpl implements UserService {\r\n}\r\n
+===================================================================
+diff --git a/src/main/java/com/hm/serviceImpl/UserServiceImpl.java b/src/main/java/com/hm/serviceImpl/UserServiceImpl.java
+--- a/src/main/java/com/hm/serviceImpl/UserServiceImpl.java	
++++ b/src/main/java/com/hm/serviceImpl/UserServiceImpl.java	
+@@ -1,6 +1,19 @@
+ package com.hm.serviceImpl;
+ 
++import com.hm.dao.UserMapper;
++import com.hm.pojo.User;
+ import com.hm.service.UserService;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.stereotype.Service;
+ 
++@Service
+ public class UserServiceImpl implements UserService {
++
++    @Autowired
++    UserMapper userMapper;
++
++    @Override
++    public User getUserByUsername(String username){
++        return userMapper.getUserByUsername(username);
++    }
+ }
