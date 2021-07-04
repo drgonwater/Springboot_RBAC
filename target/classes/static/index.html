@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="vue3.js"></script>
+    <script src="axios.min.js"></script>
+    <script src="index.full.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-plus/lib/index.full.js"></script>
+    <script src="role.js"></script>
+    <script src="vue-route4.js"></script>
+
+    <style>
+        .el-header, .el-footer {
+            background-color: #B3C0D1;
+            color: #333;
+            text-align: center;
+            line-height: 60px;
+        }
+
+        .el-aside {
+            background-color: #D3DCE6;
+            color: #333;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            text-align: center;
+            line-height: 160px;
+        }
+
+        body > .el-container {
+            margin-bottom: 40px;
+        }
+
+        .el-container:nth-child(5) .el-aside,
+        .el-container:nth-child(6) .el-aside {
+            line-height: 260px;
+        }
+
+        .el-container:nth-child(7) .el-aside {
+            line-height: 320px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="common-layout">
+        <el-container>
+            <el-header>Header</el-header>
+            <el-container>
+                <el-aside width="200px">
+                    <el-menu
+                            :uniqueOpened="true"
+                            default-active="2"
+                            class="el-menu-vertical-demo"
+                            @open="handleOpen"
+                            @close="handleClose"
+                            background-color="#545c64"
+                            text-color="#fff"
+                            active-text-color="#ffd04b">
+                        <el-submenu index="1">
+                            <template #title>
+                                <i class="el-icon-location"></i>
+                                <span>权限管理</span>
+                            </template>
+                            <el-menu-item ><router-link to="/">Go to Home</router-link></el-menu-item>
+                            <el-menu-item ><router-link to="/about">Go to About</router-link></el-menu-item>
+                            <el-menu-item index="/user1.html">用户管理</el-menu-item>
+                            <el-menu-item index="1-2">菜单管理</el-menu-item>
+                            <el-menu-item index="/role.html">角色管理</el-menu-item>
+                            <el-submenu index="1-4">
+                                <template #title>部门管理</template>
+                                <el-menu-item index="1-4-1">选项1</el-menu-item>
+                            </el-submenu>
+                        </el-submenu>
+                        <el-menu-item index="2">
+                            <i class="el-icon-document"></i>
+                            <template #title>用户列表</template>
+                        </el-menu-item>
+                        <el-menu-item index="3">
+                            <i class="el-icon-setting"></i>
+                            <template #title>用户搜索</template>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+                <el-main>
+                    <router-view></router-view>
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+</div>
+
+<script>
+    // import role from './role.html'
+    // import user1 from './user1.html'
+    var Main = {
+            methods: {
+                handleOpen(key, keyPath) {
+                    console.log(key, keyPath);
+                },
+                handleClose(key, keyPath) {
+                    console.log(key, keyPath);
+                },
+                goTo(path){
+                    this.$router.replace(path);
+                }
+            }
+        };
+    const app = Vue.createApp(Main);
+
+    const Home = { template: 'role' }
+    const About = { template: 'user1' }
+    const routes = [
+        { path: '/', component: Home },
+        { path: '/about', component: About },
+    ]
+    const router = VueRouter.createRouter({
+        history: VueRouter.createWebHashHistory(),
+        routes, // `routes: routes` 的缩写
+    })
+    // 5. 创建并挂载根实例
+    app.use(ElementPlus);
+    app.use(router);
+
+    app.mount("#app")
+</script>
+</body>
+</html>

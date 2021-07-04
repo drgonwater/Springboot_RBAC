@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="axios.min.js"></script>
+    <script src="//unpkg.com/vue@next"></script>
+    <script src="//unpkg.com/element-plus/lib/index.full.js"></script>
+    <style>
+      @import url("//unpkg.com/element-plus/lib/theme-chalk/index.css");
+      .el-header, .el-footer {
+        background-color: #B3C0D1;
+        color: #333;
+        text-align: center;
+        line-height: 60px;
+      }
+
+      .el-aside {
+        background-color: #D3DCE6;
+        color: #333;
+        text-align: center;
+        line-height: 200px;
+      }
+
+      .el-main {
+        background-color: #E9EEF3;
+        color: #333;
+        text-align: center;
+        line-height: 160px;
+      }
+
+      body > .el-container {
+        margin-bottom: 40px;
+      }
+
+      .el-container:nth-child(5) .el-aside,
+      .el-container:nth-child(6) .el-aside {
+        line-height: 260px;
+      }
+
+      .el-container:nth-child(7) .el-aside {
+        line-height: 320px;
+      }
+    </style>
+</head>
+<body>
+<div id="app">
+  <div class="common-layout">
+    <el-container>
+      <el-aside width="200px">
+        <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
+      </el-aside>
+      <el-main>Main</el-main>
+    </el-container>
+  </div>
+</div>
+
+<script>
+  var Main = {
+    data() {
+      return {
+        data: [],
+        defaultProps: {
+          children: 'children',
+          label: 'name'
+        }
+      };
+    },
+    created(){
+      this.loadData();
+    },
+    methods: {
+      loadData(){
+        axios.get("http://localhost:80/api/group/user/tree").then(res=>{
+          this.data=res.data.data;
+          console.log(res);
+        })
+      },
+      handleNodeClick(data) {
+        axios.get("http://localhost:80/api/user?groupId="+data.id).then(res=>{
+          this.tableData=res.data.data;
+          console.log(res);
+          console.log(data);
+        })
+      }
+    }
+  };
+  ;const app = Vue.createApp(Main);
+  app.use(ElementPlus);
+  app.mount("#app")
+</script>
+</body>
+</html>
